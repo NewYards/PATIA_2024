@@ -1,7 +1,11 @@
 package sokoban;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.uga.pddl4j.planners.InvalidConfigurationException;
@@ -13,32 +17,36 @@ import fr.uga.pddl4j.planners.statespace.HSP;
 
 public class Agent {
         
-    public static void main(String[] args) throws InvalidConfigurationException {
+    public static void main(String[] args) throws InvalidConfigurationException, IOException {
         // The path to the benchmarks directory
         final String benchmarks = "./pddl/";
         final String pathProblem = benchmarks + "problem/";
-       // Gets the default configuration from the planner
-        PlannerConfiguration config = HSP.getDefaultConfiguration();;
-        // Sets the domain of the problem to solve
-        config.setProperty(HSP.DOMAIN_SETTING, benchmarks + "domain.pddl");
-        // Sets the problem to solve
-        config.setProperty(HSP.PROBLEM_SETTING, pathProblem + "p01.pddl");
-        // Sets the timeout allocated to the search.
-        config.setProperty(HSP.TIME_OUT_SETTING, 1000);
-        // Sets the log level
-        config.setProperty(HSP.LOG_LEVEL_SETTING, LogLevel.INFO);
-        // Sets the heuristic used to search
-        // config.setProperty(HSP.HEURISTIC_SETTING, GoalCostHeuristic.Name.MAX);
-        // Sets the weight of the heuristic
-        config.setProperty(HSP.WEIGHT_HEURISTIC_SETTING, 1.2);
-        // Creates an instance of the HSP planner with the specified configuration
-        Planner planner = Planner.getInstance(Planner.Name.HSP, config);
-        planner.solve();
+        getLevel("./config/test21.json");
         String solution = "DRRUUU";
         for (char c : solution.toCharArray()) System.out.println(c);
     }
 
-    private int convertisseur(String level, String pathProblem)
+    private static String getLevel(String pathjson) throws IOException
+    {
+        String res = "";
+
+        BufferedReader lecteurAvecBuffer = null;
+        String ligne;
+
+        try
+        {
+            lecteurAvecBuffer = new BufferedReader(new FileReader(pathjson));
+        }
+        catch(FileNotFoundException exc)
+        {
+            System.out.println("Erreur d'ouverture");
+        }
+        while ((ligne = lecteurAvecBuffer.readLine().substring(0,12)) != "	\"testIn\": \"") res = ligne.substring(12);
+        lecteurAvecBuffer.close();
+        return res;
+    } 
+
+    private static int convertisseur(String level, String pathProblem)
     {
         try {
   
@@ -209,4 +217,5 @@ public class Agent {
 
 
 }
+
 
