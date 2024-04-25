@@ -17,4 +17,28 @@ public class Case {
         this.box = box;
         this.target = target;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isFree() {
+        return free;
+    }
+
+    public boolean isPusher() {
+        return pusher;
+    }
+
+    public boolean isWalled() {
+        return walled;
+    }
+
+    public String getBox() {
+        return box;
+    }
+
+    public boolean isTarget() {
+        return target;
+    }
 }
