@@ -32,29 +32,26 @@ public class Agent {
         final String benchmarks = "./pddl/";
         final String pathProblem = benchmarks + "problem/";
         String level = getLevel("./config/"+propertyValue);
-        System.err.println(level);
         int res = convertisseur(level, pathProblem);
-        System.err.println(res);
 
-        // Gets the default configuration from the planner
-        PlannerConfiguration config = HSP.getDefaultConfiguration();
-        // Sets the domain of the problem to solve
-        config.setProperty(HSP.DOMAIN_SETTING, benchmarks + "Sokoban.pddl");
-        // Sets the problem to solve
-        config.setProperty(HSP.PROBLEM_SETTING, pathProblem + "p"+ res + ".txt");
-        // Sets the timeout allocated to the search.
-        config.setProperty(HSP.TIME_OUT_SETTING, 1000);
-        // Sets the log level
-        config.setProperty(HSP.LOG_LEVEL_SETTING, LogLevel.INFO);
-        // Sets the heuristic used to search
-        config.setProperty(HSP.HEURISTIC_SETTING, StateHeuristic.Name.MAX);
-        // Sets the weight of the heuristic
-        config.setProperty(HSP.WEIGHT_HEURISTIC_SETTING, 1.2);
+        String problem = pathProblem + "p"+res+".txt";
+        try {
+            ProcessBuilder pb = new ProcessBuilder("java", "-cp", "./pddl4j-4.0.0.jar", "fr.uga.pddl4j.planners.statespace.FF", "./pddl/Sokoban.pddl", problem);
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
 
-        // Creates an instance of the HSP planner with the specified configuration
-        Planner planner = Planner.getInstance(Planner.Name.HSP, config);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.err.println(line);
+            }
 
-        planner.solve();
+            int exitCode = process.waitFor();
+            System.err.println("Le programme s'est terminé avec le code de sortie : " + exitCode);
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
         String solution = "DRRUUU";
         for (char c : solution.toCharArray()) System.out.println(c);
